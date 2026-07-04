@@ -14,6 +14,7 @@ The backend foundation and several core modules are now implemented.
 - Media module
 - Connected Accounts module
 - Analytics Engine module with mock-backed workspace analytics endpoints
+- Dashboard API module with frontend-ready BFF payloads
 
 ## Endpoints Available
 - Auth: `/api/auth/register`, `/api/auth/login`, `/api/auth/refresh-token`, `/api/auth/logout`
@@ -24,10 +25,11 @@ The backend foundation and several core modules are now implemented.
 - Media: `/api/media/upload`, `/api/media`
 - Connected Accounts: `/api/workspaces/:workspaceId/accounts`, `/api/accounts/:id`, `/api/accounts/:id/refresh`
 - Analytics: `/api/workspaces/:workspaceId/analytics/overview`, `/api/workspaces/:workspaceId/analytics/platforms`, `/api/workspaces/:workspaceId/analytics/trends`, `/api/workspaces/:workspaceId/analytics/engagement`, `/api/workspaces/:workspaceId/analytics/top-posts`, `/api/workspaces/:workspaceId/analytics/growth`, `/api/workspaces/:workspaceId/analytics/snapshots`
+- Dashboard: `/api/workspaces/:workspaceId/dashboard`, `/api/workspaces/:workspaceId/dashboard/summary`, `/api/workspaces/:workspaceId/dashboard/charts`, `/api/workspaces/:workspaceId/dashboard/platform-comparison`, `/api/workspaces/:workspaceId/dashboard/top-posts`, `/api/workspaces/:workspaceId/dashboard/recent-posts`, `/api/workspaces/:workspaceId/dashboard/activity`
 
 ## Remaining Work
 The following major areas are still not implemented yet:
-1. Dashboard endpoints and richer analytics persistence
+1. Richer analytics persistence and dashboard refinements
 2. Reports module
 3. Notifications and websocket basics
 4. BullMQ scheduler and queues
