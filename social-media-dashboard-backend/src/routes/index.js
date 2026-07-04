@@ -5,6 +5,7 @@ const rbacRoutes = require('./rbac.routes');
 const userRoutes = require('./user.routes');
 const organizationRoutes = require('./organization.routes');
 const mediaRoutes = require('./media.routes');
+const workspaceRoutes = require('./workspace.routes');
 
 const router = express.Router();
 
@@ -12,6 +13,7 @@ router.use('/auth', authRoutes);
 router.use('/rbac', rbacRoutes);
 router.use('/users', userRoutes);
 router.use('/organizations', organizationRoutes);
+router.use('/workspaces', workspaceRoutes);
 router.use('/media', mediaRoutes);
 
 router.get('/health', (req, res) => {
