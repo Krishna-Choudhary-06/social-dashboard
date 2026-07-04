@@ -6,6 +6,8 @@ const userRoutes = require('./user.routes');
 const organizationRoutes = require('./organization.routes');
 const mediaRoutes = require('./media.routes');
 const workspaceRoutes = require('./workspace.routes');
+const socialAccountRoutes = require('./socialAccount.routes');
+const analyticsRoutes = require('./analytics.routes');
 
 const router = express.Router();
 
@@ -15,6 +17,8 @@ router.use('/users', userRoutes);
 router.use('/organizations', organizationRoutes);
 router.use('/workspaces', workspaceRoutes);
 router.use('/media', mediaRoutes);
+router.use('/', socialAccountRoutes);
+router.use('/', analyticsRoutes);
 
 router.get('/health', (req, res) => {
   res.status(200).json({
