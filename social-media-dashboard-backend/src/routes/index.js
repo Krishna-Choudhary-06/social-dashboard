@@ -10,6 +10,7 @@ const socialAccountRoutes = require('./socialAccount.routes');
 const analyticsRoutes = require('./analytics.routes');
 const dashboardRoutes = require('./dashboard.routes');
 const reportRoutes = require('./report.routes');
+const notificationRoutes = require('./notification.routes');
 
 const router = express.Router();
 
@@ -23,6 +24,7 @@ router.use('/', socialAccountRoutes);
 router.use('/', analyticsRoutes);
 router.use('/', dashboardRoutes);
 router.use('/', reportRoutes);
+router.use('/', notificationRoutes);
 
 router.get('/health', (req, res) => {
   res.status(200).json({

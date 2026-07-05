@@ -30,13 +30,39 @@ The backend foundation and several core modules are now implemented.
 ## Remaining Work
 The following major areas are still not implemented yet:
 1. Richer analytics persistence and dashboard refinements
-2. Notifications and websocket basics
+2. Websocket basics
 3. BullMQ scheduler and queues
 4. Search/filter/sort/pagination across modules
 5. Swagger/OpenAPI docs
 6. Testing beyond basic unit tests
 7. Docker/deployment setup
 8. Production hardening and monitoring
+
+## Notifications Module (Implemented)
+### New files
+- src/models/notification.model.js
+- src/services/notification.service.js
+- src/controllers/notification.controller.js
+- src/routes/notification.routes.js
+- src/utils/notification.utils.js
+- src/tests/notification-module.test.js
+
+### New endpoints
+- GET /api/workspaces/:workspaceId/notifications
+- GET /api/workspaces/:workspaceId/notifications/unread-count
+- GET /api/notifications/:id
+- POST /api/workspaces/:workspaceId/notifications
+- PATCH /api/notifications/:id/read
+- PATCH /api/notifications/read-all
+- DELETE /api/notifications/:id
+
+### Completion percentage
+- Notifications module: ~90%
+
+### Remaining roadmap
+- Add websocket delivery hooks
+- Add email/push transport adapters
+- Add richer notification templates
 
 ## Reports Module (Implemented)
 ### New files
