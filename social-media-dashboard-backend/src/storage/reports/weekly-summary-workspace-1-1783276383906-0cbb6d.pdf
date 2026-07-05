@@ -1,0 +1,62 @@
+Mock PDF
+{
+  "id": "report-1",
+  "workspaceId": "workspace-1",
+  "workspaceName": "Weekly Summary",
+  "reportName": "Weekly Summary",
+  "reportType": "Dashboard Summary",
+  "reportFormat": "PDF",
+  "reportStatus": "Processing",
+  "dateRange": {
+    "startDate": "2024-01-01",
+    "endDate": "2024-01-31"
+  },
+  "filters": {
+    "platform": "instagram"
+  },
+  "dashboard": {
+    "summary": {},
+    "charts": {
+      "labels": [],
+      "datasets": []
+    },
+    "platformComparison": [],
+    "topPosts": [],
+    "recentPosts": [],
+    "activity": []
+  },
+  "analytics": {
+    "growth": {
+      "growth": 4.3,
+      "followers": 1200
+    },
+    "engagement": {
+      "likes": 50,
+      "comments": 4,
+      "shares": 2
+    },
+    "platforms": [
+      {
+        "platform": "instagram",
+        "summary": {
+          "followers": 1000,
+          "reach": 2000
+        },
+        "engagementRate": 0
+      }
+    ],
+    "topPosts": [
+      {
+        "id": "post-1",
+        "impressions": 2000,
+        "likes": 0,
+        "comments": 0,
+        "shares": 0,
+        "engagementRate": 5.1
+      }
+    ]
+  },
+  "generatedAt": "2024-01-01T00:00:00.000Z",
+  "expiresAt": "2024-02-01T00:00:00.000Z",
+  "downloadCount": 0
+}

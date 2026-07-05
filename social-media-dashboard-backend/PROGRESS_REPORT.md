@@ -30,14 +30,37 @@ The backend foundation and several core modules are now implemented.
 ## Remaining Work
 The following major areas are still not implemented yet:
 1. Richer analytics persistence and dashboard refinements
-2. Reports module
-3. Notifications and websocket basics
-4. BullMQ scheduler and queues
-5. Search/filter/sort/pagination across modules
-6. Swagger/OpenAPI docs
-7. Testing beyond basic unit tests
-8. Docker/deployment setup
-9. Production hardening and monitoring
+2. Notifications and websocket basics
+3. BullMQ scheduler and queues
+4. Search/filter/sort/pagination across modules
+5. Swagger/OpenAPI docs
+6. Testing beyond basic unit tests
+7. Docker/deployment setup
+8. Production hardening and monitoring
+
+## Reports Module (Implemented)
+### New files
+- src/models/report.model.js
+- src/services/report.service.js
+- src/controllers/report.controller.js
+- src/routes/report.routes.js
+- src/utils/report.utils.js
+- src/tests/report-module.test.js
+
+### New endpoints
+- POST /api/workspaces/:workspaceId/reports
+- GET /api/workspaces/:workspaceId/reports
+- GET /api/reports/:reportId
+- GET /api/reports/:reportId/download
+- DELETE /api/reports/:reportId
+
+### Completion percentage
+- Reports module: ~90%
+
+### Remaining roadmap
+- Add BullMQ workers for asynchronous generation
+- Add signed download links and storage integration
+- Expand report templates and richer export formats
 
 ## Estimated Completion Status
 - Core backend structure: ~75%
