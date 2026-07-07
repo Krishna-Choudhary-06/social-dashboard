@@ -33,18 +33,29 @@ The backend foundation and several core modules are now implemented.
 The following major areas are still not implemented yet:
 1. Richer analytics persistence and dashboard refinements
 2. Websocket basics
-3. Testing beyond basic unit tests
-4. Docker/deployment setup
-5. Production hardening and monitoring
+3. Docker/deployment setup
+4. Production hardening and monitoring
+
+## Integration Testing (Implemented)
+### New files
+- tests/integration/api.test.js
+- tests/test.setup.js
+- tests/test.utils.js
+
+### Features
+- Configured MongoDB Memory Server and mock Redis for isolated, fast execution.
+- Added comprehensive end-to-end tests covering Auth, Workspaces, Connected Accounts, Analytics, Dashboard, Reports, Notifications, and Jobs.
+- Verified JWT protection, RBAC, error handling, validation, and missing resources logic.
+- Included coverage generation with a single `npm test` script.
 
 ## API Documentation (Implemented)
 ### New files
-- swagger.config.js
-- docs/swagger.js
+- src/config/swagger.js
 
 ### Features
-- Swagger UI available at `/api/docs`
-- Fully documented 30+ endpoints across all modules
+- Swagger UI available at `GET /api/docs`
+- Raw OpenAPI JSON available at `GET /api/docs.json`
+- Fully documented endpoints across all modules including Auth, Users, Workspace, Media, Connected Accounts, Analytics, Dashboard, Reports, Notifications, and Jobs
 - OpenAPI 3.0 schema definitions and JWT Bearer auth integration
 
 ## Query & Pagination Module (Implemented)

@@ -1,14 +1,14 @@
-module.exports = {
+const swaggerSpec = {
   openapi: '3.0.0',
   info: {
     title: 'Social Dashboard Backend API',
     version: '1.0.0',
-    description: 'API documentation for the Social Media Dashboard Backend, detailing Auth, Users, Workspaces, Analytics, and more.',
+    description: 'API documentation for the Social Media Dashboard Backend, detailing Auth, Users, Workspaces, Analytics, and Jobs.',
   },
   servers: [
     {
       url: '/api',
-      description: 'Main API Server',
+      description: 'Main API Server (v1)',
     },
   ],
   components: {
@@ -34,6 +34,20 @@ module.exports = {
           success: { type: 'boolean', example: true },
           message: { type: 'string', example: 'Operation completed successfully.' },
           data: { type: 'object' },
+        },
+      },
+      JobResponse: {
+        type: 'object',
+        properties: {
+          success: { type: 'boolean', example: true },
+          message: { type: 'string', example: 'Job triggered successfully.' },
+          data: {
+            type: 'object',
+            properties: {
+              jobId: { type: 'string', example: '12345' },
+              status: { type: 'string', example: 'active' }
+            }
+          }
         },
       },
       User: {
@@ -63,34 +77,6 @@ module.exports = {
             }
           }
         }
-      },
-      Report: {
-        type: 'object',
-        properties: {
-          id: { type: 'string' },
-          reportName: { type: 'string', example: 'Monthly Performance' },
-          reportType: { type: 'string', example: 'Dashboard Summary' },
-          reportStatus: { type: 'string', example: 'Completed' },
-          reportFormat: { type: 'string', example: 'PDF' },
-        }
-      },
-      Notification: {
-        type: 'object',
-        properties: {
-          id: { type: 'string' },
-          title: { type: 'string', example: 'New Alert' },
-          message: { type: 'string', example: 'Your report is ready.' },
-          isRead: { type: 'boolean', example: false },
-        }
-      },
-      ConnectedAccount: {
-        type: 'object',
-        properties: {
-          id: { type: 'string' },
-          platform: { type: 'string', example: 'twitter' },
-          username: { type: 'string', example: 'johndoe_social' },
-          connectionStatus: { type: 'string', example: 'connected' },
-        }
       }
     },
   },
@@ -109,6 +95,7 @@ module.exports = {
     { name: 'Dashboard', description: 'Aggregated widgets and summaries for UI' },
     { name: 'Reports', description: 'Asynchronous PDF/CSV/Excel report generation' },
     { name: 'Notifications', description: 'In-app notification system' },
+    { name: 'Jobs', description: 'BullMQ background job management' },
   ],
   paths: {
     '/auth/register': {
@@ -198,10 +185,7 @@ module.exports = {
         summary: 'List users with pagination, filtering, and sorting',
         parameters: [
           { in: 'query', name: 'page', schema: { type: 'integer', default: 1 } },
-          { in: 'query', name: 'limit', schema: { type: 'integer', default: 10 } },
-          { in: 'query', name: 'search', schema: { type: 'string', description: 'Search by name or email' } },
-          { in: 'query', name: 'role', schema: { type: 'string', description: 'Filter by role' } },
-          { in: 'query', name: 'sort', schema: { type: 'string', description: 'Sort criteria (e.g. -createdAt)' } }
+          { in: 'query', name: 'limit', schema: { type: 'integer', default: 10 } }
         ],
         responses: {
           200: { description: 'Paginated user list', content: { 'application/json': { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
@@ -329,37 +313,6 @@ module.exports = {
         responses: {
           200: { description: 'Reports list fetched successfully' }
         }
-      },
-      post: {
-        tags: ['Reports'],
-        summary: 'Trigger asynchronous report generation',
-        parameters: [
-          { in: 'path', name: 'workspaceId', required: true, schema: { type: 'string' } }
-        ],
-        requestBody: {
-          required: true,
-          content: {
-            'application/json': {
-              schema: {
-                type: 'object',
-                properties: {
-                  reportName: { type: 'string', example: 'Q3 Analytics' },
-                  reportFormat: { type: 'string', example: 'PDF' },
-                  dateRange: { 
-                    type: 'object',
-                    properties: {
-                      startDate: { type: 'string', example: '2023-07-01' },
-                      endDate: { type: 'string', example: '2023-09-30' }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        responses: {
-          201: { description: 'Report generation started' }
-        }
       }
     },
     '/workspaces/{workspaceId}/notifications': {
@@ -376,6 +329,86 @@ module.exports = {
           200: { description: 'Notifications fetched successfully' }
         }
       }
+    },
+    '/jobs/reports': {
+      post: {
+        tags: ['Jobs'],
+        summary: 'Queue a new report generation job',
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  workspaceId: { type: 'string', example: '60d0fe4f5311236168a109cb' },
+                  reportName: { type: 'string', example: 'Q3 Analytics' }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          200: { description: 'Job queued successfully', content: { 'application/json': { schema: { $ref: '#/components/schemas/JobResponse' } } } },
+          500: { description: 'Internal server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
+        }
+      }
+    },
+    '/jobs/analytics': {
+      post: {
+        tags: ['Jobs'],
+        summary: 'Queue a new analytics synchronization job',
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  workspaceId: { type: 'string', example: '60d0fe4f5311236168a109cb' }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          200: { description: 'Job queued successfully', content: { 'application/json': { schema: { $ref: '#/components/schemas/JobResponse' } } } },
+          500: { description: 'Internal server error', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
+        }
+      }
+    },
+    '/jobs/health': {
+      get: {
+        tags: ['Jobs'],
+        summary: 'Get queue health metrics',
+        responses: {
+          200: { description: 'Health metrics returned', content: { 'application/json': { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+        }
+      }
+    },
+    '/jobs/{jobId}': {
+      get: {
+        tags: ['Jobs'],
+        summary: 'Get job status by ID',
+        parameters: [
+          { in: 'path', name: 'jobId', required: true, schema: { type: 'string' } }
+        ],
+        responses: {
+          200: { description: 'Job status returned', content: { 'application/json': { schema: { $ref: '#/components/schemas/SuccessResponse' } } } },
+          404: { description: 'Job not found', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
+        }
+      }
     }
   }
+};
+
+const swaggerConfig = {
+  explorer: true,
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'Social Dashboard API Docs',
+};
+
+module.exports = {
+  swaggerSpec,
+  swaggerConfig,
 };

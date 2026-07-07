@@ -16,9 +16,10 @@ const jobRoutes = require('./job.routes');
 const router = express.Router();
 
 const swaggerUi = require('swagger-ui-express');
-const { swaggerJsDoc, swaggerConfig } = require('../../swagger.config');
+const { swaggerSpec, swaggerConfig } = require('../config/swagger');
 
-router.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerJsDoc, swaggerConfig));
+router.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerConfig));
+router.get('/docs.json', (req, res) => res.json(swaggerSpec));
 
 router.use('/auth', authRoutes);
 router.use('/rbac', rbacRoutes);
