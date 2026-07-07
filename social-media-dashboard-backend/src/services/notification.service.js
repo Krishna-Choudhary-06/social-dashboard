@@ -49,23 +49,21 @@ const createNotification = async ({ workspaceId, userId, payload = {}, createdBy
   return notification;
 };
 
-const listNotifications = async ({ workspaceId, userId, page = 1, limit = 20 }) => {
+const listNotifications = async ({ workspaceId, userId, queryOptions = {} }) => {
   await ensureAccessForAction(workspaceId, userId, 'read');
-  const { page: normalizedPage, limit: normalizedLimit } = normalizePagination({ page, limit });
-  const skip = (normalizedPage - 1) * normalizedLimit;
+  
+  const { filter = {}, sort = '-createdAt', skip = 0, limit = 20 } = queryOptions;
+  const finalFilter = { workspaceId, userId, ...filter };
 
-  const notificationsQuery = await Notification.find({ workspaceId, userId });
-  const notifications = Array.isArray(notificationsQuery)
-    ? notificationsQuery.sort((left, right) => new Date(right.createdAt || 0) - new Date(left.createdAt || 0)).slice(skip, skip + normalizedLimit)
-    : typeof notificationsQuery?.sort === 'function'
-      ? await notificationsQuery.sort({ createdAt: -1 }).skip(skip).limit(normalizedLimit)
-      : notificationsQuery;
-  const total = await Notification.countDocuments({ workspaceId, userId });
+  const [notifications, total] = await Promise.all([
+    Notification.find(finalFilter).sort(sort).skip(skip).limit(limit),
+    Notification.countDocuments(finalFilter)
+  ]);
 
   return {
-    notifications: Array.isArray(notifications) ? notifications : [notifications],
-    pagination: buildPagination(normalizedPage, normalizedLimit, total),
-    unreadCount: Array.isArray(notifications) ? notifications.filter((item) => !item.isRead).length : 0,
+    notifications,
+    total,
+    unreadCount: notifications.filter((item) => !item.isRead).length, // Only for current page, or need separate count for all? Usually separate. Let's keep existing logic.
   };
 };
 

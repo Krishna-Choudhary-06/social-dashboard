@@ -10,10 +10,21 @@ const {
   refreshAccount,
 } = require('../controllers/socialAccount.controller');
 
+const queryMiddleware = require('../middlewares/query.middleware');
+
 const router = express.Router();
 
 router.post('/workspaces/:workspaceId/accounts', authMiddleware, authorizeRole(['owner', 'admin', 'analyst']), createAccount);
-router.get('/workspaces/:workspaceId/accounts', authMiddleware, authorizeRole(['owner', 'admin', 'analyst', 'viewer']), listAccounts);
+router.get(
+  '/workspaces/:workspaceId/accounts', 
+  authMiddleware, 
+  authorizeRole(['owner', 'admin', 'analyst', 'viewer']), 
+  queryMiddleware({
+    searchFields: ['username', 'displayName', 'platform'],
+    allowedFilters: ['platform', 'connectionStatus', 'lastSyncStatus']
+  }),
+  listAccounts
+);
 router.get('/accounts/:id', authMiddleware, authorizeRole(['owner', 'admin', 'analyst', 'viewer']), getAccount);
 router.patch('/accounts/:id', authMiddleware, authorizeRole(['owner', 'admin']), updateAccount);
 router.delete('/accounts/:id', authMiddleware, authorizeRole(['owner', 'admin']), deleteAccount);

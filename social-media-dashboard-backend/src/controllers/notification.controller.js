@@ -17,16 +17,28 @@ const createNotification = async (req, res, next) => {
   }
 };
 
+const { getPaginationMetadata } = require('../utils/pagination');
+
 const listNotifications = async (req, res, next) => {
   try {
-    const result = await notificationService.listNotifications({
+    const { page, limit } = req.queryOptions || { page: 1, limit: 20 };
+    
+    const { notifications, total, unreadCount } = await notificationService.listNotifications({
       workspaceId: req.params.workspaceId,
       userId: req.userId,
-      page: req.query.page,
-      limit: req.query.limit,
+      queryOptions: req.queryOptions,
     });
 
-    return sendSuccess(res, result, httpStatus.OK, 'Notifications fetched successfully');
+    return sendSuccess(
+      res, 
+      { 
+        notifications,
+        unreadCount,
+        pagination: getPaginationMetadata(page, limit, total) 
+      }, 
+      httpStatus.OK, 
+      'Notifications fetched successfully'
+    );
   } catch (error) {
     return next(error);
   }

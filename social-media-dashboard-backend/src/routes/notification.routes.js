@@ -10,9 +10,19 @@ const {
   getUnreadCount,
 } = require('../controllers/notification.controller');
 
+const queryMiddleware = require('../middlewares/query.middleware');
+
 const router = express.Router();
 
-router.get('/workspaces/:workspaceId/notifications', authMiddleware, listNotifications);
+router.get(
+  '/workspaces/:workspaceId/notifications', 
+  authMiddleware, 
+  queryMiddleware({
+    searchFields: ['title', 'message'],
+    allowedFilters: ['type', 'isRead', 'priority']
+  }),
+  listNotifications
+);
 router.get('/workspaces/:workspaceId/notifications/unread-count', authMiddleware, getUnreadCount);
 router.get('/notifications/:id', authMiddleware, getNotification);
 router.post('/workspaces/:workspaceId/notifications', authMiddleware, createNotification);

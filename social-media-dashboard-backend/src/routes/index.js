@@ -11,8 +11,14 @@ const analyticsRoutes = require('./analytics.routes');
 const dashboardRoutes = require('./dashboard.routes');
 const reportRoutes = require('./report.routes');
 const notificationRoutes = require('./notification.routes');
+const jobRoutes = require('./job.routes');
 
 const router = express.Router();
+
+const swaggerUi = require('swagger-ui-express');
+const { swaggerJsDoc, swaggerConfig } = require('../../swagger.config');
+
+router.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerJsDoc, swaggerConfig));
 
 router.use('/auth', authRoutes);
 router.use('/rbac', rbacRoutes);
@@ -25,6 +31,7 @@ router.use('/', analyticsRoutes);
 router.use('/', dashboardRoutes);
 router.use('/', reportRoutes);
 router.use('/', notificationRoutes);
+router.use('/jobs', jobRoutes);
 
 router.get('/health', (req, res) => {
   res.status(200).json({

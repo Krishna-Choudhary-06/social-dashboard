@@ -162,18 +162,18 @@ const generateReport = async ({ workspaceId, userId, payload = {} }) => {
   }
 };
 
-const listReports = async ({ workspaceId, userId }) => {
+const listReports = async ({ workspaceId, userId, queryOptions = {} }) => {
   await ensureWorkspaceAccess(workspaceId, userId);
-  const reportsQuery = await Report.find({ workspaceId });
-  const reports = Array.isArray(reportsQuery)
-    ? reportsQuery.sort((left, right) => new Date(right.generatedAt || 0) - new Date(left.generatedAt || 0))
-    : typeof reportsQuery?.sort === 'function'
-      ? await reportsQuery.sort({ generatedAt: -1 })
-      : reportsQuery;
-  return {
-    reports: Array.isArray(reports) ? reports : [reports],
-    count: Array.isArray(reports) ? reports.length : 1,
-  };
+  
+  const { filter = {}, sort = '-generatedAt', skip = 0, limit = 10 } = queryOptions;
+  const finalFilter = { workspaceId, ...filter };
+
+  const [reports, total] = await Promise.all([
+    Report.find(finalFilter).sort(sort).skip(skip).limit(limit),
+    Report.countDocuments(finalFilter)
+  ]);
+  
+  return { reports, total };
 };
 
 const getReport = async ({ reportId, userId }) => {

@@ -22,14 +22,27 @@ const createAccount = async (req, res, next) => {
   }
 };
 
+const { getPaginationMetadata } = require('../utils/pagination');
+
 const listAccounts = async (req, res, next) => {
   try {
-    const accounts = await socialAccountService.listWorkspaceAccounts({
+    const { page, limit } = req.queryOptions || { page: 1, limit: 10 };
+    
+    const { accounts, total } = await socialAccountService.listWorkspaceAccounts({
       workspaceId: req.params.workspaceId,
       userId: req.userId,
+      queryOptions: req.queryOptions,
     });
 
-    return sendSuccess(res, accounts, httpStatus.OK, 'Accounts fetched successfully');
+    return sendSuccess(
+      res, 
+      { 
+        accounts, 
+        pagination: getPaginationMetadata(page, limit, total) 
+      }, 
+      httpStatus.OK, 
+      'Accounts fetched successfully'
+    );
   } catch (error) {
     return next(error);
   }

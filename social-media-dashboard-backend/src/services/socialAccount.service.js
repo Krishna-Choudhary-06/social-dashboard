@@ -43,9 +43,18 @@ const connectAccount = async ({ workspaceId, platform, accountId, username, disp
   return account;
 };
 
-const listWorkspaceAccounts = async ({ workspaceId, userId, query = {} }) => {
+const listWorkspaceAccounts = async ({ workspaceId, userId, queryOptions = {} }) => {
   await ensureWorkspaceAccess(workspaceId, userId);
-  return SocialAccount.find({ workspaceId, ...query }).sort({ createdAt: -1 });
+  
+  const { filter = {}, sort = '-createdAt', skip = 0, limit = 10 } = queryOptions;
+  const finalFilter = { workspaceId, ...filter };
+  
+  const [accounts, total] = await Promise.all([
+    SocialAccount.find(finalFilter).sort(sort).skip(skip).limit(limit),
+    SocialAccount.countDocuments(finalFilter)
+  ]);
+  
+  return { accounts, total };
 };
 
 const getAccountById = async ({ id, userId }) => {

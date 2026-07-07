@@ -8,6 +8,7 @@ const getDashboard = async (req, res, next) => {
       workspaceId: req.params.workspaceId,
       userId: req.userId,
       query: req.query,
+      queryOptions: req.queryOptions,
     });
 
     return sendSuccess(res, data, httpStatus.OK, 'Dashboard fetched successfully');
@@ -22,6 +23,7 @@ const getDashboardSummary = async (req, res, next) => {
       workspaceId: req.params.workspaceId,
       userId: req.userId,
       query: req.query,
+      queryOptions: req.queryOptions,
     });
 
     return sendSuccess(res, data, httpStatus.OK, 'Dashboard summary fetched successfully');
@@ -36,6 +38,7 @@ const getDashboardCharts = async (req, res, next) => {
       workspaceId: req.params.workspaceId,
       userId: req.userId,
       query: req.query,
+      queryOptions: req.queryOptions,
     });
 
     return sendSuccess(res, data, httpStatus.OK, 'Dashboard charts fetched successfully');
@@ -50,6 +53,7 @@ const getPlatformComparison = async (req, res, next) => {
       workspaceId: req.params.workspaceId,
       userId: req.userId,
       query: req.query,
+      queryOptions: req.queryOptions,
     });
 
     return sendSuccess(res, data, httpStatus.OK, 'Platform comparison fetched successfully');
@@ -64,6 +68,7 @@ const getDashboardTopPosts = async (req, res, next) => {
       workspaceId: req.params.workspaceId,
       userId: req.userId,
       query: req.query,
+      queryOptions: req.queryOptions,
     });
 
     return sendSuccess(res, data, httpStatus.OK, 'Top posts fetched successfully');
@@ -78,6 +83,7 @@ const getRecentPosts = async (req, res, next) => {
       workspaceId: req.params.workspaceId,
       userId: req.userId,
       query: req.query,
+      queryOptions: req.queryOptions,
     });
 
     return sendSuccess(res, data, httpStatus.OK, 'Recent posts fetched successfully');
@@ -92,6 +98,7 @@ const getActivity = async (req, res, next) => {
       workspaceId: req.params.workspaceId,
       userId: req.userId,
       query: req.query,
+      queryOptions: req.queryOptions,
     });
 
     return sendSuccess(res, data, httpStatus.OK, 'Recent activity fetched successfully');
