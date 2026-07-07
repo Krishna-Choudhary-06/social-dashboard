@@ -1,9 +1,9 @@
 const User = require('../models/user.model');
 const ApiError = require('../utils/ApiError');
 const { sendSuccess } = require('../utils/response');
-const { buildUserQuery } = require('../utils/user');
+const { buildUserQuery } = require('../utils/user'); // Can remove later if unused everywhere
 const httpStatus = require('../constants/httpStatus');
-const { buildPagination } = require('../utils/response');
+const { getPaginationMetadata } = require('../utils/pagination');
 
 const getProfile = async (req, res, next) => {
   try {
@@ -42,9 +42,10 @@ const updateProfile = async (req, res, next) => {
 
 const listUsers = async (req, res, next) => {
   try {
-    const { filter, pagination } = buildUserQuery(req.query);
+    const { filter, sort, skip, limit, page } = req.queryOptions;
+    
     const [users, total] = await Promise.all([
-      User.find(filter).skip((pagination.page - 1) * pagination.limit).limit(pagination.limit).select('-refreshToken'),
+      User.find(filter).sort(sort).skip(skip).limit(limit).select('-refreshToken'),
       User.countDocuments(filter),
     ]);
 
@@ -52,7 +53,7 @@ const listUsers = async (req, res, next) => {
       res,
       {
         users,
-        pagination: buildPagination(pagination.page, pagination.limit, total),
+        pagination: getPaginationMetadata(page, limit, total),
       },
       httpStatus.OK,
       'Users fetched successfully'

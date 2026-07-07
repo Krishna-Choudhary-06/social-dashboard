@@ -6,6 +6,8 @@ const app = require("./app");
 const connectDB = require("./config/db");
 const { connectRedis } = require("./config/redis");
 const logger = require("./config/logger");
+const { gracefulShutdown: reportWorkerShutdown } = require("./workers/report.worker");
+const { gracefulShutdown: analyticsWorkerShutdown } = require("./workers/analytics.worker");
 
 const PORT = Number(process.env.PORT) || 5000;
 
@@ -45,10 +47,14 @@ startServer();
 
 process.on("SIGINT", async () => {
   logger.info("Shutting down server...");
+  await reportWorkerShutdown();
+  await analyticsWorkerShutdown();
   process.exit(0);
 });
 
 process.on("SIGTERM", async () => {
   logger.info("Server terminated");
+  await reportWorkerShutdown();
+  await analyticsWorkerShutdown();
   process.exit(0);
 });
