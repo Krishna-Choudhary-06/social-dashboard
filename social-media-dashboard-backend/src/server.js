@@ -8,10 +8,14 @@ const { connectRedis } = require("./config/redis");
 const logger = require("./config/logger");
 const { gracefulShutdown: reportWorkerShutdown } = require("./workers/report.worker");
 const { gracefulShutdown: analyticsWorkerShutdown } = require("./workers/analytics.worker");
+const { initSocket } = require("./sockets");
 
 const PORT = Number(process.env.PORT) || 5000;
 
 const server = http.createServer(app);
+
+// Initialize Socket.io
+initSocket(server);
 
 const startServer = async () => {
   try {

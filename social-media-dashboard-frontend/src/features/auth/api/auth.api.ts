@@ -9,7 +9,11 @@ export const authApi = {
     apiClient.post('/auth/login', data),
 
   register: (data: { firstName: string; lastName: string; email: string; password: string }) =>
-    apiClient.post('/auth/register', data),
+    apiClient.post('/auth/register', {
+      name: `${data.firstName} ${data.lastName}`.trim(),
+      email: data.email,
+      password: data.password
+    }),
 
   forgotPassword: (data: { email: string }) =>
     apiClient.post('/auth/forgot-password', data),

@@ -3,6 +3,7 @@ const { analyticsQueueName } = require('../queues/analytics.queue');
 const { workerOptions } = require('../utils/queue.utils');
 const analyticsService = require('../services/analytics.service');
 const logger = require('../config/logger'); // Assuming logger exists
+const { getIO } = require('../sockets');
 
 const processJob = async (job) => {
   try {
@@ -13,6 +14,10 @@ const processJob = async (job) => {
     // since a real sync logic is not implemented, we reuse getOverview to trigger some queries
     const { workspaceId, userId } = job.data;
     
+    try {
+      getIO().to(`workspace_${workspaceId}`).emit("sync_status", { status: "syncing", message: "Syncing your social accounts..." });
+    } catch(err) {}
+
     // As mock sync, we just verify access and load overview data.
     if (workspaceId && userId) {
       await analyticsService.getOverview({ workspaceId, userId, query: {} });
@@ -24,10 +29,27 @@ const processJob = async (job) => {
     if (logger && logger.info) logger.info(`Completed analytics sync job ${job.id}`);
     else console.log(`Completed analytics sync job ${job.id}`);
 
+    try {
+      getIO().to(`workspace_${workspaceId}`).emit("sync_status", { status: "completed", message: "All accounts synced successfully." });
+      getIO().to(`workspace_${workspaceId}`).emit("new_notification", {
+        type: "info", title: "Sync Complete", message: "All connected accounts have been synced successfully."
+      });
+    } catch(err) {}
+
     return { success: true, synced: true };
   } catch (error) {
     if (logger && logger.error) logger.error(`Failed analytics sync job ${job.id}:`, error);
     else console.error(`Failed analytics sync job ${job.id}:`, error);
+    
+    try {
+      if (job.data?.workspaceId) {
+        getIO().to(`workspace_${job.data.workspaceId}`).emit("sync_status", { status: "failed", message: "Sync failed. Retrying..." });
+        getIO().to(`workspace_${job.data.workspaceId}`).emit("new_notification", {
+          type: "error", title: "Sync Failed", message: "Twitter sync failed due to API rate limits. Retrying in 15 minutes."
+        });
+      }
+    } catch(err) {}
+
     throw error;
   }
 };

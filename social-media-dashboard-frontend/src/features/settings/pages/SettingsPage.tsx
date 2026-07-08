@@ -22,9 +22,9 @@ export default function SettingsPage() {
   const { details, updateAppearance, updateNotifications, updateSecurity } = useSettings();
   
   const activeWorkspace = useAuthStore((s) => s.activeWorkspace);
-  const { details: workspaceDetails, update: updateWorkspace } = useWorkspace(activeWorkspace?.id || '');
+  const { details: workspaceDetails } = useWorkspace();
 
-  const [workspaceName, setWorkspaceName] = useState(workspaceDetails.data?.name || 'InsightAI Workspace');
+  const [workspaceName, setWorkspaceName] = useState(workspaceDetails?.data?.name || 'InsightAI Workspace');
   const [workspaceTz, setWorkspaceTz] = useState('EST');
 
   const settingsData = details.data || {};
@@ -43,7 +43,8 @@ export default function SettingsPage() {
 
   const handleWorkspaceSave = () => {
     if (activeWorkspace) {
-      updateWorkspace.mutate({ name: workspaceName });
+      console.log('Update workspace:', workspaceName);
+      // Not implemented in useWorkspace yet
     }
   };
 
@@ -116,7 +117,7 @@ export default function SettingsPage() {
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <TextField label="Workspace Name" value={workspaceName} onChange={(e) => setWorkspaceName(e.target.value)} fullWidth />
                 <TextField label="Default Timezone" select value={workspaceTz} onChange={(e) => setWorkspaceTz(e.target.value)} fullWidth sx={{ maxWidth: 300 }}>{['EST', 'CST', 'MST', 'PST', 'UTC'].map((t) => <MenuItem key={t} value={t}>{t}</MenuItem>)}</TextField>
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}><Button variant="contained" onClick={handleWorkspaceSave} disabled={updateWorkspace.isPending}>{updateWorkspace.isPending ? 'Saving...' : 'Save Changes'}</Button></Box>
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}><Button variant="contained" onClick={handleWorkspaceSave}>Save Changes</Button></Box>
               </Box>
             </GlassCard>
           )}

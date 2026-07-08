@@ -24,6 +24,15 @@ apiClient.interceptors.request.use(
     const workspaceId = localStorage.getItem('active_workspace_id');
     if (workspaceId) {
       config.headers['X-Workspace-Id'] = workspaceId;
+
+      // Dynamically rewrite URLs to include workspaceId where required by backend
+      if (config.url) {
+        if (config.url.startsWith('/dashboard') || config.url.startsWith('/analytics')) {
+          config.url = `/workspaces/${workspaceId}${config.url}`;
+        } else if (config.url === '/reports' || config.url === '/notifications' || config.url === '/notifications/unread-count') {
+          config.url = `/workspaces/${workspaceId}${config.url}`;
+        }
+      }
     }
 
     return config;

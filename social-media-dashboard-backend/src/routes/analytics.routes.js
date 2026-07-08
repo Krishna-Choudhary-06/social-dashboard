@@ -26,4 +26,9 @@ router.get('/workspaces/:workspaceId/analytics/top-posts', authMiddleware, analy
 router.get('/workspaces/:workspaceId/analytics/growth', authMiddleware, analyticsQueryOptions, getGrowth);
 router.get('/workspaces/:workspaceId/analytics/snapshots', authMiddleware, analyticsQueryOptions, getSnapshots);
 
+// Mocks or aliases for missing backend features requested by frontend
+router.get('/workspaces/:workspaceId/analytics/audience', authMiddleware, analyticsQueryOptions, getOverview);
+router.get('/workspaces/:workspaceId/analytics/platform-comparison', authMiddleware, analyticsQueryOptions, getPlatforms);
+router.get('/workspaces/:workspaceId/analytics/content-performance', authMiddleware, analyticsQueryOptions, getTopPosts);
+
 module.exports = router;

@@ -30,7 +30,7 @@ export default function ProfilePage() {
     <Box>
       <PageHeader title="Profile" subtitle="Manage your personal profile and account settings." />
       <Grid container spacing={2.5}>
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <GlassCard>
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, py: 2 }}>
               <Box sx={{ position: 'relative' }}>
@@ -40,14 +40,14 @@ export default function ProfilePage() {
                 <Box sx={{ position: 'absolute', bottom: 0, right: 0, bgcolor: 'primary.main', borderRadius: '50%', p: 0.5, cursor: 'pointer' }}><CameraAlt sx={{ fontSize: 16, color: 'primary.contrastText' }} /></Box>
               </Box>
               <Box sx={{ textAlign: 'center' }}>
-                <Typography variant="h5" fontWeight={600}>{user ? `${user.firstName} ${user.lastName}` : 'Alex Rivera'}</Typography>
+                <Typography variant="h5" sx={{ fontWeight: 600 }}>{user ? `${user.firstName} ${user.lastName}` : 'Alex Rivera'}</Typography>
                 <Typography variant="body2" color="text.secondary">{user?.email || 'alex@insightai.com'}</Typography>
                 <Typography variant="caption" color="primary.main" sx={{ mt: 0.5, display: 'block' }}>Pro Plan</Typography>
               </Box>
             </Box>
           </GlassCard>
         </Grid>
-        <Grid item xs={12} md={8}>
+        <Grid size={{ xs: 12, md: 8 }}>
           <GlassCard title="Personal Information">
             <Box component="form" onSubmit={profileForm.handleSubmit((d) => updateProfile.mutate(d))} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <Box sx={{ display: 'flex', gap: 2 }}>
@@ -65,9 +65,9 @@ export default function ProfilePage() {
           </GlassCard>
           <GlassCard title="Change Password" sx={{ mt: 2.5 }}>
             <Box component="form" onSubmit={passwordForm.handleSubmit((d) => updatePassword.mutate(d))} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <TextField fullWidth label="Current Password" type="password" {...passwordForm.register('currentPassword')} error={!!passwordForm.formState.errors.currentPassword} helperText={passwordForm.formState.errors.currentPassword?.message} />
-              <TextField fullWidth label="New Password" type="password" {...passwordForm.register('newPassword')} error={!!passwordForm.formState.errors.newPassword} helperText={passwordForm.formState.errors.newPassword?.message} />
-              <TextField fullWidth label="Confirm Password" type="password" {...passwordForm.register('confirmPassword')} error={!!passwordForm.formState.errors.confirmPassword} helperText={passwordForm.formState.errors.confirmPassword?.message} />
+              <TextField fullWidth label="Current Password" type="password" {...passwordForm.register('currentPassword')} error={!!passwordForm.formState.errors.currentPassword} helperText={passwordForm.formState.errors.currentPassword?.message as string | undefined} />
+              <TextField fullWidth label="New Password" type="password" {...passwordForm.register('newPassword')} error={!!passwordForm.formState.errors.newPassword} helperText={passwordForm.formState.errors.newPassword?.message as string | undefined} />
+              <TextField fullWidth label="Confirm Password" type="password" {...passwordForm.register('confirmPassword')} error={!!passwordForm.formState.errors.confirmPassword} helperText={passwordForm.formState.errors.confirmPassword?.message as string | undefined} />
               <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <Button type="submit" variant="contained" disabled={updatePassword.isPending}>
                   {updatePassword.isPending ? 'Updating...' : 'Update Password'}

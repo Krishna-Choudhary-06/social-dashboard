@@ -90,7 +90,7 @@ export default function NotificationsPage() {
                 <ListItemText
                   primary={
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Typography variant="body2" fontWeight={notif.read ? 400 : 600}>{notif.title}</Typography>
+                      <Typography variant="body2" sx={{ fontWeight: notif.read ? 400 : 600 }}>{notif.title}</Typography>
                       {!notif.read && <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: 'primary.main' }} />}
                     </Box>
                   }

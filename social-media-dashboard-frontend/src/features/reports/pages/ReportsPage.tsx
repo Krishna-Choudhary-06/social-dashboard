@@ -34,7 +34,7 @@ const columns = [
     cell: (info) => (
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
         <Description sx={{ fontSize: 18, color: 'primary.main', opacity: 0.7 }} />
-        <Typography variant="body2" fontWeight={500}>{info.getValue()}</Typography>
+        <Typography variant="body2" sx={{ fontWeight: 500 }}>{info.getValue()}</Typography>
       </Box>
     ),
   }),
