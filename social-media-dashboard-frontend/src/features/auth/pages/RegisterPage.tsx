@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { motion } from 'framer-motion';
 import { tokens } from '@/app/theme';
 import { APP_NAME } from '@/constants';
+import { useRegister } from '../hooks/useAuthHooks';
 
 const registerSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
@@ -26,16 +27,21 @@ export default function RegisterPage() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const registerMutation = useRegister();
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
   });
 
-  const onSubmit = async (_data: RegisterFormData) => {
+  const onSubmit = async (data: RegisterFormData) => {
     try {
       setError(null);
-      // const response = await authApi.register(data);
-      navigate('/login');
+      await registerMutation.mutateAsync({
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        password: data.password
+      });
     } catch {
       setError('Registration failed. Please try again.');
     }

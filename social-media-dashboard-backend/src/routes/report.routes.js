@@ -8,10 +8,20 @@ const {
   deleteReport,
 } = require('../controllers/report.controller');
 
+const queryMiddleware = require('../middlewares/query.middleware');
+
 const router = express.Router();
 
 router.post('/workspaces/:workspaceId/reports', authMiddleware, generateReport);
-router.get('/workspaces/:workspaceId/reports', authMiddleware, listReports);
+router.get(
+  '/workspaces/:workspaceId/reports', 
+  authMiddleware, 
+  queryMiddleware({
+    searchFields: ['name'],
+    allowedFilters: ['type', 'status', 'createdBy']
+  }),
+  listReports
+);
 router.get('/reports/:reportId', authMiddleware, getReport);
 router.get('/reports/:reportId/download', authMiddleware, downloadReport);
 router.delete('/reports/:reportId', authMiddleware, deleteReport);

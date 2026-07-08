@@ -9,11 +9,22 @@ const {
   deactivateUser,
 } = require('../controllers/user.controller');
 
+const queryMiddleware = require('../middlewares/query.middleware');
+
 const router = express.Router();
 
 router.get('/me', authMiddleware, getProfile);
 router.patch('/me', authMiddleware, updateProfile);
-router.get('/', authMiddleware, authorizePermission('users', 'read'), listUsers);
+router.get(
+  '/', 
+  authMiddleware, 
+  authorizePermission('users', 'read'), 
+  queryMiddleware({
+    searchFields: ['name', 'email', 'username'],
+    allowedFilters: ['role', 'status']
+  }),
+  listUsers
+);
 router.get('/:id', authMiddleware, authorizePermission('users', 'read'), getUserById);
 router.patch('/:id/deactivate', authMiddleware, authorizeRole(['admin', 'superadmin']), deactivateUser);
 

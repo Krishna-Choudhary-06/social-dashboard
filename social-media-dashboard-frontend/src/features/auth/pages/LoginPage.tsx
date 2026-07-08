@@ -11,6 +11,7 @@ import { z } from 'zod';
 import { motion } from 'framer-motion';
 import { tokens } from '@/app/theme';
 import { APP_NAME, APP_TAGLINE } from '@/constants';
+import { useLogin } from '../hooks/useAuthHooks';
 
 const loginSchema = z.object({
   email: z.string().email('Enter a valid email'),
@@ -23,6 +24,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const loginMutation = useLogin();
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -31,12 +33,7 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginFormData) => {
     try {
       setError(null);
-      // API call placeholder — will connect to real backend
-      // const response = await authApi.login(data);
-      // localStorage.setItem('access_token', response.data.data.accessToken);
-      localStorage.setItem('access_token', 'placeholder_token');
-      localStorage.setItem('active_workspace_id', 'ws_1');
-      navigate('/dashboard');
+      await loginMutation.mutateAsync(data);
     } catch {
       setError('Invalid email or password');
     }

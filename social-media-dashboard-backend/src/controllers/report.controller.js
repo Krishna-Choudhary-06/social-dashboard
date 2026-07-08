@@ -16,14 +16,27 @@ const generateReport = async (req, res, next) => {
   }
 };
 
+const { getPaginationMetadata } = require('../utils/pagination');
+
 const listReports = async (req, res, next) => {
   try {
-    const result = await reportService.listReports({
+    const { page, limit } = req.queryOptions || { page: 1, limit: 10 };
+    
+    const { reports, total } = await reportService.listReports({
       workspaceId: req.params.workspaceId,
       userId: req.userId,
+      queryOptions: req.queryOptions,
     });
 
-    return sendSuccess(res, result, httpStatus.OK, 'Reports fetched successfully');
+    return sendSuccess(
+      res, 
+      { 
+        reports, 
+        pagination: getPaginationMetadata(page, limit, total) 
+      }, 
+      httpStatus.OK, 
+      'Reports fetched successfully'
+    );
   } catch (error) {
     return next(error);
   }

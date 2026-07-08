@@ -7,8 +7,21 @@
   "scripts": {
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
+    "test:unit": "node --test src/tests/*.test.js",
+    "test:integration": "jest --coverage --runInBand --forceExit",
+    "test": "npm run test:unit && npm run test:integration",
     "lint": "eslint .",
     "format": "prettier --write ."
+  },
+  "jest": {
+    "testMatch": [
+      "<rootDir>/tests/**/*.test.js"
+    ],
+    "coverageDirectory": "coverage",
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/tests/**"
+    ]
   },
   "keywords": [
     "express",
@@ -32,6 +45,7 @@
     "helmet": "^8.1.0",
     "hpp": "^0.2.3",
     "http-status-codes": "^2.3.0",
+    "ioredis": "^5.11.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.18.0",
     "multer": "^2.0.2",

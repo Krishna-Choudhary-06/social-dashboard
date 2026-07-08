@@ -8,6 +8,7 @@ const getOverview = async (req, res, next) => {
       workspaceId: req.params.workspaceId,
       userId: req.userId,
       query: req.query,
+      queryOptions: req.queryOptions,
     });
 
     return sendSuccess(res, data, httpStatus.OK, 'Analytics overview fetched successfully');
@@ -22,6 +23,7 @@ const getPlatforms = async (req, res, next) => {
       workspaceId: req.params.workspaceId,
       userId: req.userId,
       query: req.query,
+      queryOptions: req.queryOptions,
     });
 
     return sendSuccess(res, data, httpStatus.OK, 'Platform analytics fetched successfully');
@@ -36,6 +38,7 @@ const getTrends = async (req, res, next) => {
       workspaceId: req.params.workspaceId,
       userId: req.userId,
       query: req.query,
+      queryOptions: req.queryOptions,
     });
 
     return sendSuccess(res, data, httpStatus.OK, 'Analytics trends fetched successfully');
@@ -50,6 +53,7 @@ const getEngagement = async (req, res, next) => {
       workspaceId: req.params.workspaceId,
       userId: req.userId,
       query: req.query,
+      queryOptions: req.queryOptions,
     });
 
     return sendSuccess(res, data, httpStatus.OK, 'Engagement analytics fetched successfully');
@@ -64,6 +68,7 @@ const getTopPosts = async (req, res, next) => {
       workspaceId: req.params.workspaceId,
       userId: req.userId,
       query: req.query,
+      queryOptions: req.queryOptions,
     });
 
     return sendSuccess(res, data, httpStatus.OK, 'Top posts fetched successfully');
@@ -78,6 +83,7 @@ const getGrowth = async (req, res, next) => {
       workspaceId: req.params.workspaceId,
       userId: req.userId,
       query: req.query,
+      queryOptions: req.queryOptions,
     });
 
     return sendSuccess(res, data, httpStatus.OK, 'Growth analytics fetched successfully');
@@ -92,6 +98,7 @@ const getSnapshots = async (req, res, next) => {
       workspaceId: req.params.workspaceId,
       userId: req.userId,
       query: req.query,
+      queryOptions: req.queryOptions,
     });
 
     return sendSuccess(res, data, httpStatus.OK, 'Analytics snapshots fetched successfully');

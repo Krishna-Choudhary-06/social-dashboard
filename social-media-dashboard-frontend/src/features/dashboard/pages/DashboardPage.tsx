@@ -12,6 +12,10 @@ import { AreaChartWidget } from '@/components/charts/AreaChartWidget';
 import { BarChartWidget } from '@/components/charts/BarChartWidget';
 import { DonutChartWidget } from '@/components/charts/DonutChartWidget';
 import { tokens } from '@/app/theme';
+import { 
+  useDashboardKpis, usePlatformVelocity, useAiInsights, 
+  useTopPosts, useRecentActivity, usePlatformComparison 
+} from '../hooks/useDashboardHooks';
 
 // ---- Static dashboard data matching the Stitch design ----
 const kpis = [
@@ -75,6 +79,21 @@ const item = {
 };
 
 export default function DashboardPage() {
+  const { data: kpiData } = useDashboardKpis();
+  const { data: velocityDataResult } = usePlatformVelocity();
+  const { data: aiInsightsData } = useAiInsights();
+  const { data: topPostsData } = useTopPosts();
+  const { data: activityData } = useRecentActivity();
+  const { data: platformSplitData } = usePlatformComparison();
+
+  // Use API data or fallback to static placeholders
+  const displayKpis = kpiData || kpis;
+  const displayVelocity = velocityDataResult || velocityData;
+  const displayInsights = aiInsightsData || aiInsights;
+  const displayTopPosts = topPostsData || topPosts;
+  const displayActivity = activityData || activity;
+  const displayPlatformSplit = platformSplitData || platformData;
+
   return (
     <Box>
       <PageHeader
@@ -97,7 +116,7 @@ export default function DashboardPage() {
         animate="show"
         sx={{ mb: 3 }}
       >
-        {kpis.map((kpi) => (
+        {displayKpis.map((kpi: any) => (
           <Grid key={kpi.label} item xs={6} sm={4} md={3} lg={2.4} component={motion.div} variants={item}>
             <StatCard {...kpi} />
           </Grid>
@@ -115,7 +134,7 @@ export default function DashboardPage() {
             }
           >
             <AreaChartWidget
-              data={velocityData}
+              data={displayVelocity}
               dataKeys={[
                 { key: 'reach', color: tokens.colors.primary, name: 'Reach' },
                 { key: 'engagement', color: tokens.colors.secondary, name: 'Engagement' },
@@ -130,7 +149,7 @@ export default function DashboardPage() {
         <Grid item xs={12} lg={4}>
           <GlassCard title="AI Prediction Engine">
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              {aiInsights.map((insight) => (
+              {displayInsights.map((insight: any) => (
                 <Box
                   key={insight.type}
                   sx={{
@@ -171,13 +190,13 @@ export default function DashboardPage() {
         <Grid item xs={12} md={4}>
           <GlassCard title="Top Performing Posts">
             <List disablePadding>
-              {topPosts.map((post, i) => (
+              {displayTopPosts.map((post: any, i: number) => (
                 <ListItem
                   key={i}
                   sx={{
                     px: 0,
                     py: 1.5,
-                    borderBottom: i < topPosts.length - 1 ? '1px solid' : 'none',
+                    borderBottom: i < displayTopPosts.length - 1 ? '1px solid' : 'none',
                     borderColor: 'divider',
                   }}
                 >
@@ -199,14 +218,14 @@ export default function DashboardPage() {
         <Grid item xs={12} md={4}>
           <GlassCard title="Live Activity">
             <List disablePadding>
-              {activity.map((act, i) => (
+              {displayActivity.map((act: any, i: number) => (
                 <ListItem
                   key={i}
                   sx={{
                     px: 0,
                     py: 1.5,
                     alignItems: 'flex-start',
-                    borderBottom: i < activity.length - 1 ? '1px solid' : 'none',
+                    borderBottom: i < displayActivity.length - 1 ? '1px solid' : 'none',
                     borderColor: 'divider',
                   }}
                 >
@@ -244,7 +263,7 @@ export default function DashboardPage() {
         <Grid item xs={12} md={4}>
           <GlassCard title="Platform Split" subtitle="Engagement distribution across channels">
             <DonutChartWidget
-              data={platformData.map((d, i) => ({
+              data={displayPlatformSplit.map((d: any, i: number) => ({
                 name: d.name,
                 value: d.value,
                 color: [tokens.colors.instagram, tokens.colors.facebook, tokens.colors.twitter, tokens.colors.linkedin, tokens.colors.youtube][i],

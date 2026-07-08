@@ -32,6 +32,8 @@ import {
 } from '@mui/icons-material';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
+import { useQueryClient } from '@tanstack/react-query';
+import { useAuthStore, type Workspace } from '@/store/auth.store';
 import { useUIStore } from '@/store';
 import { useIsMobile } from '@/hooks';
 import { TOPBAR_HEIGHT } from '@/constants';
@@ -48,6 +50,18 @@ export function Topbar() {
 
   const [profileAnchor, setProfileAnchor] = useState<null | HTMLElement>(null);
   const [workspaceAnchor, setWorkspaceAnchor] = useState<null | HTMLElement>(null);
+
+  const workspaces = useAuthStore((s) => s.workspaces);
+  const activeWorkspace = useAuthStore((s) => s.activeWorkspace);
+  const setActiveWorkspace = useAuthStore((s) => s.setActiveWorkspace);
+  const user = useAuthStore((s) => s.user);
+  const queryClient = useQueryClient();
+
+  const handleWorkspaceChange = (workspace: Workspace) => {
+    setActiveWorkspace(workspace);
+    queryClient.invalidateQueries();
+    setWorkspaceAnchor(null);
+  };
 
   return (
     <AppBar
@@ -76,7 +90,7 @@ export function Topbar() {
             display: { xs: 'none', sm: 'flex' },
           }}
         >
-          Workspace
+          {activeWorkspace ? activeWorkspace.name : 'Workspace'}
         </Button>
         <Menu
           anchorEl={workspaceAnchor}
@@ -85,10 +99,16 @@ export function Topbar() {
           transformOrigin={{ horizontal: 'left', vertical: 'top' }}
           anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
         >
-          <MenuItem onClick={() => { setWorkspaceAnchor(null); navigate('/workspace'); }}>
-            <ListItemText primary="Alex Rivera" secondary="Pro Plan" />
-          </MenuItem>
-          <Divider />
+          {workspaces.map((w) => (
+            <MenuItem 
+              key={w.id} 
+              onClick={() => handleWorkspaceChange(w)}
+              selected={w.id === activeWorkspace?.id}
+            >
+              <ListItemText primary={w.name} secondary={`${w.plan} Plan`} />
+            </MenuItem>
+          ))}
+          {workspaces.length > 0 && <Divider />}
           <MenuItem onClick={() => { setWorkspaceAnchor(null); navigate('/workspace'); }}>
             <ListItemIcon><Settings fontSize="small" /></ListItemIcon>
             <ListItemText>Manage Workspaces</ListItemText>
@@ -204,8 +224,12 @@ export function Topbar() {
           slotProps={{ paper: { sx: { width: 220, mt: 1 } } }}
         >
           <Box sx={{ px: 2, py: 1.5 }}>
-            <Typography variant="subtitle1" fontWeight={600}>Alex Rivera</Typography>
-            <Typography variant="caption" color="text.secondary">alex@insightai.com</Typography>
+            <Typography variant="subtitle1" fontWeight={600}>
+              {user ? `${user.firstName} ${user.lastName}` : 'User'}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              {user?.email || 'user@example.com'}
+            </Typography>
           </Box>
           <Divider />
           <MenuItem onClick={() => { setProfileAnchor(null); navigate('/profile'); }}>
