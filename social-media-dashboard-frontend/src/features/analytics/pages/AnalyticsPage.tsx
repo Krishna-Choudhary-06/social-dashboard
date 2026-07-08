@@ -9,6 +9,7 @@ import { AreaChartWidget } from '@/components/charts/AreaChartWidget';
 import { BarChartWidget } from '@/components/charts/BarChartWidget';
 import { DonutChartWidget } from '@/components/charts/DonutChartWidget';
 import { tokens } from '@/app/theme';
+import { useAnalytics } from '../hooks/useAnalytics';
 
 const tabs = ['Overview', 'Growth', 'Engagement', 'Audience', 'Platform Comparison'];
 
@@ -49,6 +50,19 @@ const contentPerformance = [
 
 export default function AnalyticsPage() {
   const [activeTab, setActiveTab] = useState(0);
+  const { overview, growth, engagement, audience, platformComparison, contentPerformance: contentPerfApi } = useAnalytics();
+
+  const displayOverview = overview.data || {
+    reach: '1.2M', reachChange: 8.7, reachTrend: 'up',
+    engagement: '4.2%', engagementChange: 0.3, engagementTrend: 'up',
+    impressions: '3.8M', impressionsChange: 12.1, impressionsTrend: 'up',
+    visits: '89.4k', visitsChange: -2.4, visitsTrend: 'down'
+  };
+
+  const displayGrowth = growth.data || performanceData;
+  const displayPlatform = platformComparison.data || platformEngagement;
+  const displayAudience = audience.data || audienceData;
+  const displayContent = contentPerfApi.data || contentPerformance;
 
   return (
     <Box>
@@ -94,16 +108,16 @@ export default function AnalyticsPage() {
       {/* KPI Row */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid item xs={6} sm={3}>
-          <StatCard label="Total Reach" value="1.2M" change={8.7} trend="up" changeLabel="vs prev period" />
+          <StatCard label="Total Reach" value={displayOverview.reach} change={displayOverview.reachChange} trend={displayOverview.reachTrend as 'up'|'down'|'neutral'} changeLabel="vs prev period" />
         </Grid>
         <Grid item xs={6} sm={3}>
-          <StatCard label="Engagement Rate" value="4.2%" change={0.3} trend="up" changeLabel="vs prev period" />
+          <StatCard label="Engagement Rate" value={displayOverview.engagement} change={displayOverview.engagementChange} trend={displayOverview.engagementTrend as 'up'|'down'|'neutral'} changeLabel="vs prev period" />
         </Grid>
         <Grid item xs={6} sm={3}>
-          <StatCard label="Impressions" value="3.8M" change={12.1} trend="up" changeLabel="vs prev period" />
+          <StatCard label="Impressions" value={displayOverview.impressions} change={displayOverview.impressionsChange} trend={displayOverview.impressionsTrend as 'up'|'down'|'neutral'} changeLabel="vs prev period" />
         </Grid>
         <Grid item xs={6} sm={3}>
-          <StatCard label="Profile Visits" value="89.4k" change={-2.4} trend="down" changeLabel="vs prev period" />
+          <StatCard label="Profile Visits" value={displayOverview.visits} change={displayOverview.visitsChange} trend={displayOverview.visitsTrend as 'up'|'down'|'neutral'} changeLabel="vs prev period" />
         </Grid>
       </Grid>
 
@@ -112,7 +126,7 @@ export default function AnalyticsPage() {
         <Grid item xs={12} lg={8}>
           <GlassCard title="Performance Over Time" subtitle="Tracking Reach and Engagement across all nodes">
             <AreaChartWidget
-              data={performanceData}
+              data={displayGrowth}
               dataKeys={[
                 { key: 'reach', color: tokens.colors.primary, name: 'Reach' },
                 { key: 'engagement', color: tokens.colors.secondary, name: 'Engagement' },
@@ -126,9 +140,9 @@ export default function AnalyticsPage() {
         <Grid item xs={12} lg={4}>
           <GlassCard title="Platform Split" subtitle="Engagement distribution across channels">
             <DonutChartWidget
-              data={platformEngagement.map((d, i) => ({
+              data={displayPlatform.map((d: any, i: number) => ({
                 name: d.name,
-                value: d.engagement,
+                value: d.engagement || d.value,
                 color: [tokens.colors.instagram, tokens.colors.facebook, tokens.colors.twitter, tokens.colors.linkedin, tokens.colors.youtube][i],
               }))}
               height={320}
@@ -141,7 +155,7 @@ export default function AnalyticsPage() {
         <Grid item xs={12} md={6}>
           <GlassCard title="Audience Demographics" subtitle="Age distribution of your audience">
             <BarChartWidget
-              data={audienceData}
+              data={displayAudience}
               dataKey="value"
               categoryKey="name"
               layout="horizontal"
@@ -154,7 +168,7 @@ export default function AnalyticsPage() {
         <Grid item xs={12} md={6}>
           <GlassCard title="Content Performance" subtitle="Engagement by content type">
             <BarChartWidget
-              data={contentPerformance}
+              data={displayContent}
               dataKey="value"
               categoryKey="name"
               layout="vertical"

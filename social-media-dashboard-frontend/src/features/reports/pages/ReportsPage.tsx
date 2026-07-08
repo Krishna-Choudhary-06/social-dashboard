@@ -6,6 +6,7 @@ import { PageHeader } from '@/components/layout/PageHeader';
 import { GlassCard } from '@/components/cards/GlassCard';
 import { DataTable } from '@/components/tables/DataTable';
 import { tokens } from '@/app/theme';
+import { useReports } from '../hooks/useReports';
 
 interface ReportRow {
   id: string;
@@ -61,6 +62,20 @@ const columns = [
 
 export default function ReportsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [formData, setFormData] = useState({ title: '', type: 'Performance', format: 'PDF', startDate: '', endDate: '' });
+  const { list, generate } = useReports();
+
+  const displayReports = list.data || reports;
+
+  const handleGenerate = async () => {
+    await generate.mutateAsync({
+      title: formData.title,
+      type: formData.type,
+      format: formData.format,
+      dateRange: { start: formData.startDate, end: formData.endDate }
+    });
+    setDialogOpen(false);
+  };
 
   return (
     <Box>
@@ -77,7 +92,7 @@ export default function ReportsPage() {
 
       <GlassCard>
         <DataTable
-          data={reports}
+          data={displayReports}
           columns={columns}
           searchPlaceholder="Search reports..."
           emptyTitle="No reports yet"
@@ -89,25 +104,25 @@ export default function ReportsPage() {
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>Generate Report</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, pt: '16px !important' }}>
-          <TextField label="Report Title" fullWidth />
-          <TextField label="Type" select fullWidth defaultValue="Performance">
+          <TextField label="Report Title" fullWidth value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} />
+          <TextField label="Type" select fullWidth value={formData.type} onChange={e => setFormData({ ...formData, type: e.target.value })}>
             {['Performance', 'Engagement', 'Growth', 'Benchmark', 'Overview'].map((t) => (
               <MenuItem key={t} value={t}>{t}</MenuItem>
             ))}
           </TextField>
-          <TextField label="Format" select fullWidth defaultValue="PDF">
+          <TextField label="Format" select fullWidth value={formData.format} onChange={e => setFormData({ ...formData, format: e.target.value })}>
             {['PDF', 'CSV', 'XLSX'].map((f) => (
               <MenuItem key={f} value={f}>{f}</MenuItem>
             ))}
           </TextField>
           <Box sx={{ display: 'flex', gap: 2 }}>
-            <TextField label="Start Date" type="date" fullWidth slotProps={{ inputLabel: { shrink: true } }} />
-            <TextField label="End Date" type="date" fullWidth slotProps={{ inputLabel: { shrink: true } }} />
+            <TextField label="Start Date" type="date" fullWidth slotProps={{ inputLabel: { shrink: true } }} value={formData.startDate} onChange={e => setFormData({ ...formData, startDate: e.target.value })} />
+            <TextField label="End Date" type="date" fullWidth slotProps={{ inputLabel: { shrink: true } }} value={formData.endDate} onChange={e => setFormData({ ...formData, endDate: e.target.value })} />
           </Box>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2.5 }}>
           <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={() => setDialogOpen(false)}>Generate</Button>
+          <Button variant="contained" onClick={handleGenerate} disabled={generate.isPending}>{generate.isPending ? 'Generating...' : 'Generate'}</Button>
         </DialogActions>
       </Dialog>
     </Box>

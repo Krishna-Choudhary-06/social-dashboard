@@ -6,6 +6,7 @@ import { PageHeader } from '@/components/layout/PageHeader';
 import { GlassCard } from '@/components/cards/GlassCard';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { tokens } from '@/app/theme';
+import { useNotifications } from '../hooks/useNotifications';
 
 const notifications = [
   { id: '1', type: 'success' as const, title: 'Report Generated', message: 'Monthly Performance Report is ready for download.', time: '5 min ago', read: false },
@@ -17,7 +18,7 @@ const notifications = [
   { id: '7', type: 'success' as const, title: 'Milestone', message: 'You crossed 500K combined followers! 🎉', time: '2 days ago', read: true },
 ];
 
-const iconMap = {
+const iconMap: any = {
   info: <Info />,
   success: <CheckCircle />,
   warning: <Warning />,
@@ -25,7 +26,7 @@ const iconMap = {
   ai_insight: <AutoAwesome />,
 };
 
-const colorMap = {
+const colorMap: any = {
   info: tokens.colors.tertiary,
   success: tokens.colors.success,
   warning: tokens.colors.warning,
@@ -35,17 +36,20 @@ const colorMap = {
 
 export default function NotificationsPage() {
   const [tab, setTab] = useState(0);
-  const unreadCount = notifications.filter((n) => !n.read).length;
-  const filtered = tab === 1 ? notifications.filter((n) => !n.read) : notifications;
+  const { list, unreadCount, markAllAsRead, remove } = useNotifications({ unreadOnly: tab === 1 });
+
+  const displayNotifications = list.data || notifications;
+  const filtered = tab === 1 ? displayNotifications.filter((n: any) => !n.read) : displayNotifications;
+  const currentUnreadCount = unreadCount.data || notifications.filter((n) => !n.read).length;
 
   return (
     <Box>
       <PageHeader
         title="Notifications"
-        subtitle={`${unreadCount} unread notifications`}
+        subtitle={`${currentUnreadCount} unread notifications`}
         breadcrumbs={[{ label: 'Dashboard', href: '/dashboard' }, { label: 'Notifications' }]}
         actions={
-          <Button startIcon={<MarkEmailRead />} variant="outlined" size="small">
+          <Button startIcon={<MarkEmailRead />} variant="outlined" size="small" onClick={() => markAllAsRead.mutate()} disabled={markAllAsRead.isPending}>
             Mark All Read
           </Button>
         }
@@ -54,12 +58,12 @@ export default function NotificationsPage() {
       <GlassCard>
         <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2 }}>
           <Tab label="All" />
-          <Tab label={<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>Unread <Chip label={unreadCount} size="small" color="primary" sx={{ height: 20, fontSize: '0.625rem' }} /></Box>} />
+          <Tab label={<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>Unread <Chip label={currentUnreadCount} size="small" color="primary" sx={{ height: 20, fontSize: '0.625rem' }} /></Box>} />
         </Tabs>
 
         <List disablePadding>
           <AnimatePresence>
-            {filtered.map((notif) => (
+            {filtered.map((notif: any) => (
               <ListItem
                 key={notif.id}
                 component={motion.li}
@@ -75,7 +79,7 @@ export default function NotificationsPage() {
                   bgcolor: notif.read ? 'transparent' : (t) => t.palette.mode === 'dark' ? 'rgba(192, 193, 255, 0.03)' : 'rgba(73, 75, 214, 0.03)',
                 }}
                 secondaryAction={
-                  <IconButton size="small" sx={{ color: 'text.secondary' }}><Delete fontSize="small" /></IconButton>
+                  <IconButton size="small" sx={{ color: 'text.secondary' }} onClick={() => remove.mutate(notif.id)}><Delete fontSize="small" /></IconButton>
                 }
               >
                 <ListItemAvatar>
